@@ -53,13 +53,14 @@ var jump = function(){
 	hero_state = 0;
 	time_jump = (Date.now() - jump_start)/500;
 	if(time_jump <= 1){	
-		hero.y -= 8 * (1 - time_jump) * (1 - time_jump);
+		hero.y -= 8 * (time_jump - 1) * (time_jump - 1);
 	}
 	else if(time_jump <= 2){
 		hero.y += 8 * (time_jump - 1) * (time_jump - 1);
 	}
 	else{
 		hero_state = 1;
+		hero.y = 168;
 	}
 
 }
@@ -69,7 +70,7 @@ var reset = function () {
 	hero.y = 168;
 
 	// Throw the monster somewhere on the screen randomly
-	monster.x = 32 + (Math.random() * (canvas.width - 64));
+	monster.x = canvas.width - 32;
 	monster.y = 168;
 };
 
@@ -88,10 +89,24 @@ var update = function (modifier) {
 		&& monster.x <= (hero.x + 32)
 		&& hero.y <= (monster.y + 32)
 		&& monster.y <= (hero.y + 32)
-		) {
-		++Times_die;
-	reset();
-}
+		) 
+	{
+		var r = confirm("One more try ?");
+		if(r==true)
+		{
+			window.location.reload();
+		}
+		else{
+			window.close();
+		}
+	}
+	if(monster.x > 32)
+	{
+		monster.x -= modifier * 256;
+	}
+	else{
+		monster.x = canvas.width - 32;
+	}
 };
 
 // Draw everything
