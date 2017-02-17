@@ -1,7 +1,7 @@
 // Create the canvas
 var canvas = document.createElement("canvas");
 var ctx = canvas.getContext("2d");
-canvas.width = 800;
+canvas.width = 512;
 canvas.height = 480;
 document.body.appendChild(canvas);
 
@@ -34,7 +34,7 @@ var hero = {
 	speed: 256 // movement in pixels per second
 };
 var monster = {};
-var Times_die = 0;
+var monstersCaught = 0;
 
 // Handle keyboard controls
 var keysDown = {};
@@ -47,41 +47,46 @@ addEventListener("keyup", function (e) {
 	delete keysDown[e.keyCode];
 }, false);
 
-var hero_state = 1;
-var jump_start = 0;
-var jump = function(){
-	hero_state = 0;
-	time_jump = (Date.now() - jump_start)/500;
-	if(time_jump <= 1){	
-		hero.y -= 8 * (1 - time_jump) * (1 - time_jump);
-	}
-	else if(time_jump <= 2){
-		hero.y += 8 * (time_jump - 1) * (time_jump - 1);
-	}
-	else{
-		hero_state = 1;
-	}
-
-}
 // Reset the game when the player catches a monster
 var reset = function () {
-	hero.x = 100;
-	hero.y = 168;
+	hero.x = canvas.width / 2;
+	hero.y = canvas.height / 2;
 
 	// Throw the monster somewhere on the screen randomly
 	monster.x = 32 + (Math.random() * (canvas.width - 64));
-	monster.y = 168;
+	monster.y = 32 + (Math.random() * (canvas.height - 64));
 };
 
 // Update game objects
 var update = function (modifier) {
 
-	if (38 in keysDown && hero.y<(canvas.height - 32)) { // Player holding down
-		if(hero_state == 1){
-			jump_start = Date.now();
-		}
+	// monster automove
+	// var dirction_m = Math.floor(time * 3.1415)% 4;
+	// if(dirction_m==0 && monster.y>32){
+	// 	monster.y -=hero.speed * modifier * Math.random();
+	// }
+	// if(dirction_m==1 && monster.y<(canvas.height - 64)){
+	// 	monster.y +=hero.speed * modifier * Math.random();
+	// }
+	// if(dirction_m==2 && monster.x>32){
+	// 	monster.x -=hero.speed * modifier * Math.random();
+	// }
+	// if(dirction_m==3 && monster.x<(canvas.width - 64)){
+	// 	monster.x +=hero.speed * modifier * Math.random();
+	// }
+
+	if (38 in keysDown && hero.y>32) { // Player holding up
+		hero.y -= hero.speed * modifier;
 	}
-	jump();
+	if (40 in keysDown && hero.y<(canvas.height - 64)) { // Player holding down
+		hero.y += hero.speed * modifier;
+	}
+	if (37 in keysDown && hero.x>32) { // Player holding left
+		hero.x -= hero.speed * modifier;
+	}
+	if (39 in keysDown && hero.x<(canvas.width - 64)) { // Player holding right
+		hero.x += hero.speed * modifier;
+	}
 	// Are they touching?
 	if (
 		hero.x <= (monster.x + 32)
@@ -89,23 +94,16 @@ var update = function (modifier) {
 		&& hero.y <= (monster.y + 32)
 		&& monster.y <= (hero.y + 32)
 		) {
-		++Times_die;
+		++monstersCaught;
 	reset();
 }
 };
 
 // Draw everything
 var render = function () {
-
-	// background
 	if (bgReady) {
 		ctx.drawImage(bgImage, 0, 0);
 	}
-	ctx.fillStyle="#FFF";
-	ctx.fillRect(0,0,800,480);
-	ctx.moveTo(0,200);
-	ctx.lineTo(800,200);
-	ctx.stroke();
 
 	if (heroReady) {
 		ctx.drawImage(heroImage, hero.x, hero.y);
@@ -116,12 +114,12 @@ var render = function () {
 	}
 
 	// Score
-	ctx.fillStyle = "rgb(0, 0, 0)";
+	ctx.fillStyle = "rgb(250, 250, 250)";
 	ctx.font = "24px Helvetica";
 	ctx.textAlign = "left";
 	ctx.textBaseline = "top";
-	ctx.fillText("Time: " + time, 32, 32);
-	ctx.fillText("Times Tried: " + Times_die, 32, 64);
+	ctx.fillText("Time:" + time, 32, 32);
+	ctx.fillText("Goblins caught: " + monstersCaught, 32, 64);
 };
 
 // The main game loop
