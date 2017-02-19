@@ -61,19 +61,21 @@ var reset = function () {
 var update = function (modifier) {
 
 	// monster automove
-	// var dirction_m = Math.floor(time * 3.1415)% 4;
-	// if(dirction_m==0 && monster.y>32){
-	// 	monster.y -=hero.speed * modifier * Math.random();
-	// }
-	// if(dirction_m==1 && monster.y<(canvas.height - 64)){
-	// 	monster.y +=hero.speed * modifier * Math.random();
-	// }
-	// if(dirction_m==2 && monster.x>32){
-	// 	monster.x -=hero.speed * modifier * Math.random();
-	// }
-	// if(dirction_m==3 && monster.x<(canvas.width - 64)){
-	// 	monster.x +=hero.speed * modifier * Math.random();
-	// }
+	if(Math.random() < 0.02){
+		dirction_m = Math.floor(Math.random() * 100) % 4;
+	}
+	if(dirction_m==0 && monster.y>32){
+		monster.y -=hero.speed * modifier * Math.random();
+	}
+	if(dirction_m==1 && monster.y<(canvas.height - 64)){
+		monster.y +=hero.speed * modifier * Math.random();
+	}
+	if(dirction_m==2 && monster.x>32){
+		monster.x -=hero.speed * modifier * Math.random();
+	}
+	if(dirction_m==3 && monster.x<(canvas.width - 64)){
+		monster.x +=hero.speed * modifier * Math.random();
+	}
 
 	if (38 in keysDown && hero.y>32) { // Player holding up
 		hero.y -= hero.speed * modifier;
@@ -146,7 +148,7 @@ requestAnimationFrame = w.requestAnimationFrame || w.webkitRequestAnimationFrame
 
 // Let's play this game!
 var start = then = Date.now();
-var time= 0;
-
+var time = 0;
+var dirction_m = 0;
 reset();
 main();
